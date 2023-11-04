@@ -1,29 +1,66 @@
 <script setup>
 import { ref } from "vue";
-const operators = ["x", "/", "+", "-"];
-const input = ref();
-const output = ref(0);
+const items = [
+  ["(", ")", "%", "AC"],
+  [7, 8, 9, "/"],
+  [4, 5, 6, "X"],
+  [1, 2, 3, "-"],
+  [0, ".", "=", "+"],
+];
+const result = ref(0);
+const prevValue = ref(0);
+const operator = ref("");
+const number = ref(0);
 
-const calculate = (_operator) => {
-  if (_operator === "x") {
-    output.value *= input.value;
-  } else if (_operator === "/") {
-    output.value /= input.value;
-  } else if (_operator === "+") {
-    output.value += input.value;
+const calculate = (item) => {
+  if (typeof item === "number") {
+    number.value = item;
+  } else if (item === "AC") {
+    result.value = 0;
+    number.value = 0;
+    prevValue.value = 0;
+    operator.value = "";
   } else {
-    output.value -= input.value;
+    if (prevValue.value === 0) {
+      prevValue.value = number.value;
+    } else {
+      if (operator.value === "X") {
+        prevValue.value *= number.value;
+      } else if (operator.value === "/") {
+        prevValue.value /= number.value;
+      } else if (operator.value === "+") {
+        prevValue.value += number.value;
+        console.log(prevValue.value);
+      } else if (operator.value === "-") {
+        prevValue.value -= number.value;
+      } else if (operator.value === "%") {
+        prevValue.value %= number.value;
+      }
+    }
+    operator.value = item;
+    number.value = 0;
   }
 };
 </script>
 <template>
   <div>
-    <h2>{{ output.toFixed(2) }}</h2>
-    <input type="number" v-model="input" />
+    <h3 v-if="prevValue !== 0">
+      {{ prevValue }}<span v-if="operator !== ''">{{ operator }}</span>
+    </h3>
+    <h1>{{ number }}</h1>
     <div>
-      <ul style="display: flex; flex-wrap: wrap; gap: 4px">
-        <li v-for="(operator, index) in operators" :key="index">
-          <button @click="calculate(operator)">{{ operator }}</button>
+      <ul style="display: flex; flex-direction: column">
+        <li v-for="(item, index) in items" :key="index">
+          <ul style="display: flex">
+            <li v-for="(subItem, subIndex) in item" :key="subIndex">
+              <button
+                @click="calculate(subItem)"
+                style="width: 64px; height: 40px"
+              >
+                {{ subItem }}
+              </button>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
