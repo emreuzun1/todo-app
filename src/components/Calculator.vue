@@ -14,7 +14,9 @@ const number = ref(0);
 
 const calculate = (item) => {
   if (typeof item === "number") {
-    number.value = item;
+    let numberString = number.value.toString();
+    numberString += item.toString();
+    number.value = parseInt(numberString);
   } else if (item === "AC") {
     result.value = 0;
     number.value = 0;
@@ -35,6 +37,8 @@ const calculate = (item) => {
         prevValue.value -= number.value;
       } else if (operator.value === "%") {
         prevValue.value %= number.value;
+      } else {
+        operator.value = "";
       }
     }
     operator.value = item;
